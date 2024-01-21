@@ -39,6 +39,11 @@ export default function HomeScreen() {
   };
   const hideDeleteModal = () => setDelModVisible(false);
 
+  //warning modal
+  const [warningVisible, setWarningVisible] = useState(false);
+  const showWarningModal = () => setWarningVisible(true);
+  const hideWarningModal = () => setWarningVisible(false);
+
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
 
@@ -66,6 +71,10 @@ export default function HomeScreen() {
 
     setTitle("");
     setPrice(0);
+
+    if (totalDailyCost > maxLimit) {
+      showWarningModal();
+    }
 
     hideModal();
   };
@@ -140,6 +149,27 @@ export default function HomeScreen() {
         </ScrollView>
 
         <FAB icon="plus" style={styles.fab} onPress={() => showModal()}></FAB>
+
+        {/**Warning Modal */}
+        <Portal>
+          <Modal
+            visible={warningVisible}
+            onDismiss={hideWarningModal}
+            contentContainerStyle={styles.modal}
+          >
+            <Text style={{ alignSelf: "center" }}>
+              Stop wasting money bruh!
+            </Text>
+            <Button
+              icon="delete"
+              mode="elevated"
+              style={styles.modalButton}
+              onPress={hideWarningModal}
+            >
+              Got you
+            </Button>
+          </Modal>
+        </Portal>
 
         {/**Delete Modal */}
         <Portal>
