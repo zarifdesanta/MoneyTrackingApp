@@ -19,14 +19,18 @@ import {
   Appbar,
   Tooltip,
 } from "react-native-paper";
+import MyProgressBar from "../components/MyProgressBar";
+import { maxLimit } from "./SettingsScreen";
 
 var curTotalDailyCost = 0;
 
 export default function HomeScreen() {
+  //add modal
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
+  //delete modal
   const [delModVisible, setDelModVisible] = useState(false);
   const [deleteId, setDeleteId] = useState();
   const showDeleteModal = (id) => {
@@ -79,8 +83,9 @@ export default function HomeScreen() {
     hideDeleteModal();
   };
 
-  const getCurTitle = () => {
-    return dailyList[deleteId].title;
+  const getProgressValue = () => {
+    let tmp = totalDailyCost / maxLimit;
+    return tmp;
   };
 
   return (
@@ -88,8 +93,12 @@ export default function HomeScreen() {
       <Appbar.Header>
         <Appbar.Content title="Home"></Appbar.Content>
       </Appbar.Header>
+
       <View style={styles.container}>
         <Text>Daily Expenses</Text>
+
+        <MyProgressBar progress={getProgressValue()}></MyProgressBar>
+
         <ScrollView
           style={{ flex: 1, margin: 0 }}
           contentContainerStyle={{
@@ -114,6 +123,7 @@ export default function HomeScreen() {
             );
           })}
 
+          {/**Total cost */}
           <View
             style={[
               styles.item,
@@ -206,7 +216,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     backgroundColor: "white",
     height: "auto",
-    width: 350,
+    width: "90%",
     borderRadius: 20,
     padding: 20,
   },
@@ -223,7 +233,8 @@ const styles = StyleSheet.create({
     width: "95%",
     height: "100%",
     backgroundColor: "#eaddff",
-    marginTop: 20,
+    marginTop: 5,
+    marginBottom: 10,
     justifyContent: "space-between",
     padding: 10,
     borderRadius: 20,
