@@ -30,8 +30,8 @@ export default function HomeScreen() {
   const [delModVisible, setDelModVisible] = useState(false);
   const [deleteId, setDeleteId] = useState();
   const showDeleteModal = (id) => {
-    setDelModVisible(true);
     setDeleteId(id);
+    setDelModVisible(true);
   };
   const hideDeleteModal = () => setDelModVisible(false);
 
@@ -73,6 +73,10 @@ export default function HomeScreen() {
     setDailyList(dailyList);
 
     hideDeleteModal();
+  };
+
+  const getCurTitle = () => {
+    return dailyList[deleteId].title;
   };
 
   return (
@@ -125,13 +129,17 @@ export default function HomeScreen() {
 
         <FAB icon="plus" style={styles.fab} onPress={() => showModal()}></FAB>
 
+        {/**Delete Modal */}
         <Portal>
           <Modal
             visible={delModVisible}
             onDismiss={hideDeleteModal}
             contentContainerStyle={styles.modal}
           >
-            <Text style={{ alignSelf: "center" }}>Wanna Save Some Money?</Text>
+            <Text style={{ alignSelf: "center" }}>
+              Wanna save some money on{" "}
+              {delModVisible ? dailyList[deleteId].title : ""}?
+            </Text>
             <Button
               icon="delete"
               mode="elevated"
@@ -143,6 +151,7 @@ export default function HomeScreen() {
           </Modal>
         </Portal>
 
+        {/**Add modal */}
         <Portal>
           <Modal
             visible={visible}
@@ -152,7 +161,6 @@ export default function HomeScreen() {
             <TextInput
               label="Title"
               mode="outlined"
-              value={title}
               onChangeText={(title) => setTitle(title)}
               multiline={true}
             ></TextInput>
@@ -160,7 +168,6 @@ export default function HomeScreen() {
               label="Price"
               mode="outlined"
               keyboardType="numeric"
-              value={price}
               onChangeText={(price) => setPrice(price)}
               right={<TextInput.Icon icon="currency-bdt" />}
             ></TextInput>
@@ -216,6 +223,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
     borderRadius: 20,
-    elevation: 10,
+    elevation: 5,
   },
 });
