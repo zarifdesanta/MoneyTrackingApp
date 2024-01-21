@@ -1,12 +1,33 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
-import { ProgressBar } from "react-native-paper";
+import {
+  Modal,
+  Portal,
+  ProgressBar,
+  Text,
+  Button,
+  PaperProvider,
+} from "react-native-paper";
 
 export default function MyProgressBar({ progress }) {
+  const changeColor = () => {
+    if (progress === 1) {
+      return "orange";
+    } else if (progress > 1) {
+      return "red";
+    } else {
+      return "green";
+    }
+  };
+
+  const giveWarning = () => {
+    Alert.alert("Stop wasting your money bruh");
+  };
+
   return (
     <ProgressBar
       progress={progress}
-      color="green"
+      color={changeColor()}
       style={styles.progressBar}
     ></ProgressBar>
   );

@@ -112,13 +112,11 @@ export default function HomeScreen() {
                 style={styles.item}
                 onLongPress={() => showDeleteModal(id)}
               >
-                <>
-                  <Text>{item.title}</Text>
-                  <Text>
-                    {item.price}
-                    <Icon name="currency-bdt" size={16}></Icon>
-                  </Text>
-                </>
+                <Text>{item.title}</Text>
+                <Text>
+                  {item.price}
+                  <Icon name="currency-bdt" size={16}></Icon>
+                </Text>
               </TouchableOpacity>
             );
           })}
