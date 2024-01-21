@@ -41,6 +41,7 @@ export default function HomeScreen() {
   const [totalDailyCost, setTotalDailyCost] = useState(0);
 
   const [dailyList, setDailyList] = useState([]);
+  const [dailyDeleteList, setDailyDeleteList] = useState([]);
 
   const addItem = () => {
     const itemObj = {
@@ -69,6 +70,9 @@ export default function HomeScreen() {
     curTotalDailyCost -= Number(dailyList[id].price);
     setTotalDailyCost(curTotalDailyCost);
 
+    dailyDeleteList.push(dailyList[id]);
+    setDailyDeleteList(dailyDeleteList);
+
     dailyList.splice(id, 1);
     setDailyList(dailyList);
 
@@ -87,7 +91,7 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <Text>Daily Expenses</Text>
         <ScrollView
-          style={{ flex: 1, margin: 5 }}
+          style={{ flex: 1, margin: 0 }}
           contentContainerStyle={{
             alignItems: "center",
           }}
