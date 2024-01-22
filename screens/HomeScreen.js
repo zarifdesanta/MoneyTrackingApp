@@ -66,22 +66,26 @@ export default function HomeScreen() {
       price: price,
     };
 
-    dailyList.push(itemObj);
-    setDailyList(dailyList);
+    if (!isNaN(price)) {
+      dailyList.push(itemObj);
+      setDailyList(dailyList);
 
-    if (curTotalDailyCost == 0) {
-      curTotalDailyCost = Number(price);
+      if (curTotalDailyCost == 0) {
+        curTotalDailyCost = Number(price);
+      } else {
+        curTotalDailyCost += Number(price);
+      }
+
+      setTotalDailyCost(curTotalDailyCost);
+
+      setTitle("");
+      setPrice(0);
+
+      if (totalDailyCost > maxLimit) {
+        showWarningModal();
+      }
     } else {
-      curTotalDailyCost += Number(price);
-    }
-
-    setTotalDailyCost(curTotalDailyCost);
-
-    setTitle("");
-    setPrice(0);
-
-    if (totalDailyCost > maxLimit) {
-      showWarningModal();
+      return Alert.alert("Price needs to be a number");
     }
 
     hideModal();
@@ -175,7 +179,7 @@ export default function HomeScreen() {
           onDismiss={hideNewDayModal}
           text="Wanna start a new day?"
           buttonText="Start"
-          buttonIcon="delete"
+          buttonIcon="chart-box-plus-outline"
           onPress={newDay}
         ></MyModal>
 
@@ -185,7 +189,7 @@ export default function HomeScreen() {
           onDismiss={hideWarningModal}
           text="Stop wasting money bruh!"
           buttonText="Gotchu"
-          buttonIcon="delete"
+          buttonIcon="hand-okay"
           onPress={hideWarningModal}
         ></MyModal>
 
@@ -193,7 +197,10 @@ export default function HomeScreen() {
         <MyModal
           visible={delModVisible}
           onDismiss={hideDeleteModal}
-          text="Wanna save some money on"
+          text={
+            "Wanna save some money on " +
+            (delModVisible ? dailyList[deleteId].title : "")
+          }
           buttonText="Delete"
           buttonIcon="delete"
           onPress={deleteItem}
