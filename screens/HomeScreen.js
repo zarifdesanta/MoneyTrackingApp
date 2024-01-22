@@ -18,8 +18,11 @@ import {
   Button,
   Appbar,
   Tooltip,
+  useTheme,
 } from "react-native-paper";
 import MyProgressBar from "../components/MyProgressBar";
+import Divider from "../components/Divider";
+import MyModal from "../components/MyModal";
 import { maxLimit } from "./SettingsScreen";
 
 var curTotalDailyCost = 0;
@@ -43,6 +46,11 @@ export default function HomeScreen() {
   const [warningVisible, setWarningVisible] = useState(false);
   const showWarningModal = () => setWarningVisible(true);
   const hideWarningModal = () => setWarningVisible(false);
+
+  //new day modal
+  const [newDayVisible, setNewDayVisible] = useState(false);
+  const showNewDayModal = () => setNewDayVisible(true);
+  const hideNewDayModal = () => setNewDayVisible(false);
 
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
@@ -97,10 +105,27 @@ export default function HomeScreen() {
     return tmp;
   };
 
+  const newDay = () => {
+    //store previous day's data, at least totalcost
+
+    setDailyList([]);
+    setDailyDeleteList([]);
+    setTotalDailyCost(0);
+    curTotalDailyCost = 0;
+
+    hideNewDayModal();
+  };
+
+  const theme = useTheme();
+
   return (
     <PaperProvider>
-      <Appbar.Header>
+      <Appbar.Header mode="small" elevated={true}>
         <Appbar.Content title="Home"></Appbar.Content>
+        <Appbar.Action
+          icon="chart-box-plus-outline"
+          onPress={showNewDayModal}
+        ></Appbar.Action>
       </Appbar.Header>
 
       <View style={styles.container}>
@@ -108,8 +133,19 @@ export default function HomeScreen() {
 
         <MyProgressBar progress={getProgressValue()}></MyProgressBar>
 
+        {/**Total cost */}
+        <View style={styles.totalItem}>
+          <Text>Total</Text>
+          <Text>
+            {totalDailyCost}
+            <Icon name="currency-bdt" size={16}></Icon>
+          </Text>
+        </View>
+
+        <Divider></Divider>
+
         <ScrollView
-          style={{ flex: 1, margin: 0 }}
+          style={{ flex: 1, paddingTop: 7 }}
           contentContainerStyle={{
             alignItems: "center",
           }}
@@ -129,69 +165,40 @@ export default function HomeScreen() {
               </TouchableOpacity>
             );
           })}
-
-          {/**Total cost */}
-          <View
-            style={[
-              styles.item,
-              {
-                borderWidth: 1,
-                borderColor: "#49454f",
-              },
-            ]}
-          >
-            <Text>Total</Text>
-            <Text>
-              {totalDailyCost}
-              <Icon name="currency-bdt" size={16}></Icon>
-            </Text>
-          </View>
         </ScrollView>
 
         <FAB icon="plus" style={styles.fab} onPress={() => showModal()}></FAB>
 
+        {/**New Day Modal */}
+        <MyModal
+          visible={newDayVisible}
+          onDismiss={hideNewDayModal}
+          text="Wanna start a new day?"
+          buttonText="Start"
+          buttonIcon="delete"
+          onPress={newDay}
+        ></MyModal>
+
         {/**Warning Modal */}
-        <Portal>
-          <Modal
-            visible={warningVisible}
-            onDismiss={hideWarningModal}
-            contentContainerStyle={styles.modal}
-          >
-            <Text style={{ alignSelf: "center" }}>
-              Stop wasting money bruh!
-            </Text>
-            <Button
-              icon="delete"
-              mode="elevated"
-              style={styles.modalButton}
-              onPress={hideWarningModal}
-            >
-              Got you
-            </Button>
-          </Modal>
-        </Portal>
+        <MyModal
+          visible={warningVisible}
+          onDismiss={hideWarningModal}
+          text="Stop wasting money bruh!"
+          buttonText="Gotchu"
+          buttonIcon="delete"
+          onPress={hideWarningModal}
+        ></MyModal>
 
         {/**Delete Modal */}
-        <Portal>
-          <Modal
-            visible={delModVisible}
-            onDismiss={hideDeleteModal}
-            contentContainerStyle={styles.modal}
-          >
-            <Text style={{ alignSelf: "center" }}>
-              Wanna save some money on{" "}
-              {delModVisible ? dailyList[deleteId].title : ""}?
-            </Text>
-            <Button
-              icon="delete"
-              mode="elevated"
-              style={styles.modalButton}
-              onPress={() => deleteItem(deleteId)}
-            >
-              Delete
-            </Button>
-          </Modal>
-        </Portal>
+        <MyModal
+          visible={delModVisible}
+          onDismiss={hideDeleteModal}
+          text="Wanna save some money on"
+          buttonText="Delete"
+          buttonIcon="delete"
+          onPress={deleteItem}
+          id={deleteId}
+        ></MyModal>
 
         {/**Add modal */}
         <Portal>
@@ -233,6 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
+    paddingTop: 7,
   },
   fab: {
     position: "absolute",
@@ -259,13 +267,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     width: "95%",
-    height: "100%",
+    height: 40,
     backgroundColor: "#eaddff",
     marginTop: 5,
     marginBottom: 10,
     justifyContent: "space-between",
-    padding: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
     borderRadius: 20,
     elevation: 5,
+  },
+  totalItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "90%",
+    justifyContent: "space-between",
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderRadius: 20,
   },
 });
