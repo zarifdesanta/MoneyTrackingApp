@@ -25,6 +25,7 @@ import MyProgressBar from "../components/MyProgressBar";
 import Divider from "../components/Divider";
 import MyModal from "../components/MyModal";
 
+import { maxLimit } from "./SettingsScreen";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
 
 var curTotalDailyCost = 0;
@@ -65,6 +66,10 @@ export default function HomeScreen() {
   const [dailyDeleteList, setDailyDeleteList] = useState([]);
 
   const [progressVal, setProgressVal] = useState();
+  const handleSetProgressVal = () => {
+    let tmp = curTotalDailyCost / maxLimit;
+    setProgressVal(tmp);
+  };
 
   const addItem = async () => {
     const itemObj = {
@@ -134,15 +139,36 @@ export default function HomeScreen() {
     setDailyDeleteList([]);
     setTotalDailyCost(0);
     curTotalDailyCost = 0;
+    setProgressVal(0);
 
     hideNewDayModal();
   };
 
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     async function getEverything() {
-      setDailyList(await getData("daily_list"));
-      setTotalDailyCost(await getData("cur_total_daily_cost"));
-      setLimit(await getData("limit"));
+      let l = await getData("limit");
+      let dl = await getData("daily_list");
+      let ctdc = await getData("cur_total_daily_cost");
+
+      if (dl != null) {
+        setDailyList(dl);
+      } else {
+        setDailyList([]);
+      }
+
+      if (ctdc != null) {
+        setTotalDailyCost(ctdc);
+      } else {
+        setTotalDailyCost(0);
+      }
+
+      if (l != null) {
+        setLimit(l);
+      } else {
+        setLimit(100);
+      }
     }
 
     getEverything();
@@ -162,7 +188,10 @@ export default function HomeScreen() {
           icon="chart-box-plus-outline"
           onPress={showNewDayModal}
         ></Appbar.Action>
-        <Appbar.Action icon="rotate-right" onPress={{}}></Appbar.Action>
+        <Appbar.Action
+          icon="rotate-right"
+          onPress={() => setRefresh(!refresh)}
+        ></Appbar.Action>
       </Appbar.Header>
 
       <View style={styles.container}>

@@ -11,18 +11,27 @@ import {
 
 import { setData, getData } from "../helper/SaveLoad";
 
+export var maxLimit = 100;
+
 export default function SettingsScreen() {
   const [limit, setLimit] = useState(100);
 
   const handleSetLimit = (text) => {
-    //maxLimit = text;
+    maxLimit = text;
     setData("limit", Number(text));
     setLimit(text);
   };
 
   useEffect(() => {
     async function getEverything() {
-      setLimit(await getData("limit"));
+      let l = await getData("limit");
+      if (l != null) {
+        setLimit(l);
+        maxLimit = 100;
+      } else {
+        setLimit(100);
+        maxLimit = 100;
+      }
     }
     getEverything();
   }, []);
