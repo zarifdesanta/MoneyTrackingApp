@@ -4,8 +4,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
@@ -23,7 +24,8 @@ import {
 import MyProgressBar from "../components/MyProgressBar";
 import Divider from "../components/Divider";
 import MyModal from "../components/MyModal";
-import { maxLimit } from "./SettingsScreen";
+
+import { setData, getData, clearAllData } from "../helper/SaveLoad";
 
 var curTotalDailyCost = 0;
 
@@ -55,12 +57,16 @@ export default function HomeScreen() {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
 
+  const [limit, setLimit] = useState(100);
+
   const [totalDailyCost, setTotalDailyCost] = useState(0);
 
   const [dailyList, setDailyList] = useState([]);
   const [dailyDeleteList, setDailyDeleteList] = useState([]);
 
-  const addItem = () => {
+  const [progressVal, setProgressVal] = useState();
+
+  const addItem = async () => {
     const itemObj = {
       title: title,
       price: price,
@@ -70,6 +76,8 @@ export default function HomeScreen() {
       dailyList.push(itemObj);
       setDailyList(dailyList);
 
+      curTotalDailyCost = await getData("cur_total_daily_cost");
+
       if (curTotalDailyCost == 0) {
         curTotalDailyCost = Number(price);
       } else {
@@ -78,10 +86,13 @@ export default function HomeScreen() {
 
       setTotalDailyCost(curTotalDailyCost);
 
+      setData("daily_list", dailyList);
+      setData("cur_total_daily_cost", curTotalDailyCost);
+
       setTitle("");
       setPrice(0);
 
-      if (totalDailyCost > maxLimit) {
+      if (totalDailyCost > (await getData("limit"))) {
         showWarningModal();
       }
     } else {
@@ -91,7 +102,9 @@ export default function HomeScreen() {
     hideModal();
   };
 
-  const deleteItem = (id) => {
+  const deleteItem = async (id) => {
+    curTotalDailyCost = await getData("cur_total_daily_cost");
+
     curTotalDailyCost -= Number(dailyList[id].price);
     setTotalDailyCost(curTotalDailyCost);
 
@@ -101,16 +114,21 @@ export default function HomeScreen() {
     dailyList.splice(id, 1);
     setDailyList(dailyList);
 
+    setData("daily_list", dailyList);
+    setData("cur_total_daily_cost", curTotalDailyCost);
+
     hideDeleteModal();
   };
 
   const getProgressValue = () => {
-    let tmp = totalDailyCost / maxLimit;
+    let tmp = totalDailyCost / limit;
     return tmp;
   };
 
   const newDay = () => {
     //store previous day's data, at least totalcost
+    setData("daily_list", []);
+    setData("cur_total_daily_cost", 0);
 
     setDailyList([]);
     setDailyDeleteList([]);
@@ -120,16 +138,31 @@ export default function HomeScreen() {
     hideNewDayModal();
   };
 
+  useEffect(() => {
+    async function getEverything() {
+      setDailyList(await getData("daily_list"));
+      setTotalDailyCost(await getData("cur_total_daily_cost"));
+      setLimit(await getData("limit"));
+    }
+
+    getEverything();
+  }, []);
+
   const theme = useTheme();
 
   return (
     <PaperProvider>
-      <Appbar.Header mode="small" elevated={true}>
+      <Appbar.Header
+        mode="small"
+        elevated={true}
+        style={{ backgroundColor: "#f3edf6" }}
+      >
         <Appbar.Content title="Home"></Appbar.Content>
         <Appbar.Action
           icon="chart-box-plus-outline"
           onPress={showNewDayModal}
         ></Appbar.Action>
+        <Appbar.Action icon="rotate-right" onPress={{}}></Appbar.Action>
       </Appbar.Header>
 
       <View style={styles.container}>

@@ -1,5 +1,5 @@
 import { View, StyleSheet, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Appbar,
   Button,
@@ -9,12 +9,31 @@ import {
   TextInput,
 } from "react-native-paper";
 
-export var maxLimit = 100;
+import { setData, getData } from "../helper/SaveLoad";
 
 export default function SettingsScreen() {
+  const [limit, setLimit] = useState(100);
+
+  const handleSetLimit = (text) => {
+    //maxLimit = text;
+    setData("limit", Number(text));
+    setLimit(text);
+  };
+
+  useEffect(() => {
+    async function getEverything() {
+      setLimit(await getData("limit"));
+    }
+    getEverything();
+  }, []);
+
   return (
     <PaperProvider>
-      <Appbar.Header mode="small" elevated={true}>
+      <Appbar.Header
+        mode="small"
+        elevated={true}
+        style={{ backgroundColor: "#f3edf6" }}
+      >
         <Appbar.Content title="Settings"></Appbar.Content>
       </Appbar.Header>
       <View style={styles.container}>
@@ -31,8 +50,8 @@ export default function SettingsScreen() {
             style={styles.inputItem}
             outlineStyle={{ borderRadius: 30 }}
             right={<TextInput.Icon icon="currency-bdt" />}
-            placeholder={maxLimit.toString()}
-            onChangeText={(text) => (maxLimit = text)}
+            placeholder={limit.toString()}
+            onChangeText={(text) => handleSetLimit(text)}
           ></TextInput>
           <View style={styles.buttonRow}>
             <Button
