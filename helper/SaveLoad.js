@@ -6,7 +6,7 @@ export function setData(key, value) {
 
 export async function getData(key) {
   const data = await AsyncStorage.getItem(key);
-  console.log(data);
+  //console.log(data);
   return JSON.parse(data);
 }
 

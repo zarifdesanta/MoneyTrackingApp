@@ -27,10 +27,11 @@ import MyModal from "../components/MyModal";
 
 import { maxLimit } from "./SettingsScreen";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
+import { useRoute } from "@react-navigation/native";
 
 var curTotalDailyCost = 0;
 
-export default function HomeScreen() {
+export default function HomeScreen({ route, navigation }) {
   //add modal
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -126,7 +127,9 @@ export default function HomeScreen() {
   };
 
   const getProgressValue = () => {
-    let tmp = totalDailyCost / limit;
+    const l = useRoute().params?.lim;
+    //console.log(t + "hi");
+    let tmp = totalDailyCost / Number(l);
     return tmp;
   };
 

@@ -9,11 +9,13 @@ import {
   TextInput,
 } from "react-native-paper";
 
+import { useRoute } from "@react-navigation/native";
+
 import { setData, getData } from "../helper/SaveLoad";
 
 export var maxLimit = 100;
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const [limit, setLimit] = useState(100);
 
   const handleSetLimit = (text) => {
@@ -62,6 +64,12 @@ export default function SettingsScreen() {
             placeholder={limit.toString()}
             onChangeText={(text) => handleSetLimit(text)}
           ></TextInput>
+          <Button
+            mode="elevated"
+            onPress={() => navigation.jumpTo("Home", { lim: limit })}
+          >
+            Set Limit
+          </Button>
           <View style={styles.buttonRow}>
             <Button
               icon="rotate-left"
