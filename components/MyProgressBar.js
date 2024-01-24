@@ -20,8 +20,6 @@ export default function MyProgressBar({ progress }) {
     }
   };
 
-  var [update, setUpdate] = useState();
-
   const giveWarning = () => {
     Alert.alert("Stop wasting your money bruh");
   };

@@ -25,11 +25,11 @@ import MyProgressBar from "../components/MyProgressBar";
 import Divider from "../components/Divider";
 import MyModal from "../components/MyModal";
 
-import { maxLimit } from "./SettingsScreen";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
 import { useRoute } from "@react-navigation/native";
 
 var curTotalDailyCost = 0;
+var maxLimit = 100;
 
 export default function HomeScreen({ route, navigation }) {
   //add modal
@@ -59,18 +59,10 @@ export default function HomeScreen({ route, navigation }) {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
 
-  const [limit, setLimit] = useState(100);
-
   const [totalDailyCost, setTotalDailyCost] = useState(0);
 
   const [dailyList, setDailyList] = useState([]);
   const [dailyDeleteList, setDailyDeleteList] = useState([]);
-
-  const [progressVal, setProgressVal] = useState();
-  const handleSetProgressVal = () => {
-    let tmp = curTotalDailyCost / maxLimit;
-    setProgressVal(tmp);
-  };
 
   const addItem = async () => {
     const itemObj = {
@@ -126,10 +118,27 @@ export default function HomeScreen({ route, navigation }) {
     hideDeleteModal();
   };
 
+  const [limit, setLimit] = useState(100);
+
   const getProgressValue = () => {
-    const l = useRoute().params?.lim;
-    //console.log(t + "hi");
-    let tmp = totalDailyCost / Number(l);
+    let l = useRoute().params?.lim;
+    let p = 100;
+    if (l != null) {
+      p = l;
+    } else {
+      p = 100;
+    }
+    let tmp = totalDailyCost / p;
+    return tmp;
+  };
+
+  const setLimitFromSettings = () => {
+    let l = useRoute().params?.lim;
+    setLimit(l);
+  };
+
+  const getProgressValue_ALt = () => {
+    let tmp = totalDailyCost / limit;
     return tmp;
   };
 
@@ -142,16 +151,14 @@ export default function HomeScreen({ route, navigation }) {
     setDailyDeleteList([]);
     setTotalDailyCost(0);
     curTotalDailyCost = 0;
-    setProgressVal(0);
 
     hideNewDayModal();
   };
 
-  const [refresh, setRefresh] = useState(false);
-
   useEffect(() => {
     async function getEverything() {
-      let l = await getData("limit");
+      //clearAllData();
+
       let dl = await getData("daily_list");
       let ctdc = await getData("cur_total_daily_cost");
 
@@ -165,12 +172,6 @@ export default function HomeScreen({ route, navigation }) {
         setTotalDailyCost(ctdc);
       } else {
         setTotalDailyCost(0);
-      }
-
-      if (l != null) {
-        setLimit(l);
-      } else {
-        setLimit(100);
       }
     }
 
@@ -190,10 +191,6 @@ export default function HomeScreen({ route, navigation }) {
         <Appbar.Action
           icon="chart-box-plus-outline"
           onPress={showNewDayModal}
-        ></Appbar.Action>
-        <Appbar.Action
-          icon="rotate-right"
-          onPress={() => setRefresh(!refresh)}
         ></Appbar.Action>
       </Appbar.Header>
 
