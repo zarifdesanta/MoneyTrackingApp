@@ -11,7 +11,7 @@ import {
 
 import { useRoute } from "@react-navigation/native";
 
-import { setData, getData } from "../helper/SaveLoad";
+import { setData, getData, clearAllData } from "../helper/SaveLoad";
 
 export default function SettingsScreen({ navigation }) {
   const [limit, setLimit] = useState(100);
@@ -19,6 +19,10 @@ export default function SettingsScreen({ navigation }) {
   const handleSetLimit = (text) => {
     setData("limit", Number(text));
     setLimit(Number(text));
+  };
+
+  const resetAllData = () => {
+    clearAllData();
   };
 
   useEffect(() => {
@@ -85,6 +89,16 @@ export default function SettingsScreen({ navigation }) {
               onPress={() => console.log("Showing History")}
             >
               Show History
+            </Button>
+          </View>
+          <View style={styles.row}>
+            <Button
+              icon="rotate-left"
+              mode="elevated"
+              style={[styles.button, { width: "90%" }]}
+              onPress={() => resetAllData()}
+            >
+              Delete All Data (Dev)
             </Button>
           </View>
         </ScrollView>

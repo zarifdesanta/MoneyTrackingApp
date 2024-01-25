@@ -64,6 +64,10 @@ export default function HomeScreen({ route, navigation }) {
   const [dailyList, setDailyList] = useState([]);
   const [dailyDeleteList, setDailyDeleteList] = useState([]);
 
+  const [limit, setLimit] = useState(100);
+
+  const getSetL = useRoute().params?.lim;
+
   const addItem = async () => {
     const itemObj = {
       title: title,
@@ -118,9 +122,7 @@ export default function HomeScreen({ route, navigation }) {
     hideDeleteModal();
   };
 
-  const [limit, setLimit] = useState(100);
-
-  const getProgressValue = () => {
+  const getProgressValue_Backup = () => {
     let l = useRoute().params?.lim;
     let p = 100;
     if (l != null) {
@@ -137,8 +139,13 @@ export default function HomeScreen({ route, navigation }) {
     setLimit(l);
   };
 
-  const getProgressValue_ALt = () => {
-    let tmp = totalDailyCost / limit;
+  const getProgressValue = () => {
+    let tmp = 0;
+    if (getSetL == null && limit != null) {
+      tmp = totalDailyCost / limit;
+    } else if (getSetL != null) {
+      tmp = totalDailyCost / getSetL;
+    }
     return tmp;
   };
 
@@ -173,10 +180,18 @@ export default function HomeScreen({ route, navigation }) {
       } else {
         setTotalDailyCost(0);
       }
+
+      let savedL = await getData("limit");
+
+      if (savedL != null) {
+        setLimit(savedL);
+      } else {
+        setLimit(100);
+      }
     }
 
     getEverything();
-  }, []);
+  }, [limit]);
 
   const theme = useTheme();
 
@@ -192,6 +207,12 @@ export default function HomeScreen({ route, navigation }) {
           icon="chart-box-plus-outline"
           onPress={showNewDayModal}
         ></Appbar.Action>
+        {/**
+        <Appbar.Action
+          icon="rotate-right"
+          onPress={() => setLimit(getSetL)}
+        ></Appbar.Action>
+         */}
       </Appbar.Header>
 
       <View style={styles.container}>
