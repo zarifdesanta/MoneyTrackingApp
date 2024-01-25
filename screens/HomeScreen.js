@@ -4,7 +4,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  RefreshControl,
 } from "react-native";
 import { useEffect, useState } from "react";
 import React from "react";
@@ -29,7 +28,6 @@ import { setData, getData, clearAllData } from "../helper/SaveLoad";
 import { useRoute } from "@react-navigation/native";
 
 var curTotalDailyCost = 0;
-var maxLimit = 100;
 
 export default function HomeScreen({ route, navigation }) {
   //add modal
@@ -56,17 +54,24 @@ export default function HomeScreen({ route, navigation }) {
   const showNewDayModal = () => setNewDayVisible(true);
   const hideNewDayModal = () => setNewDayVisible(false);
 
+  //title & price of each item
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
 
+  //total cost
   const [totalDailyCost, setTotalDailyCost] = useState(0);
 
+  //dailylist array
   const [dailyList, setDailyList] = useState([]);
+  //daily delete list: currently just updating not showing anywhere
   const [dailyDeleteList, setDailyDeleteList] = useState([]);
 
+  //limit
   const [limit, setLimit] = useState(100);
+  const limitFromSettings = useRoute().params?.lim;
 
-  const getSetL = useRoute().params?.lim;
+  //history array
+  const [historyList, setHistoryList] = useState([]);
 
   const addItem = async () => {
     const itemObj = {
@@ -122,34 +127,26 @@ export default function HomeScreen({ route, navigation }) {
     hideDeleteModal();
   };
 
-  const getProgressValue_Backup = () => {
-    let l = useRoute().params?.lim;
-    let p = 100;
-    if (l != null) {
-      p = l;
-    } else {
-      p = 100;
-    }
-    let tmp = totalDailyCost / p;
-    return tmp;
-  };
-
-  const setLimitFromSettings = () => {
-    let l = useRoute().params?.lim;
-    setLimit(l);
-  };
-
   const getProgressValue = () => {
     let tmp = 0;
-    if (getSetL == null && limit != null) {
+    if (limitFromSettings == null && limit != null) {
       tmp = totalDailyCost / limit;
-    } else if (getSetL != null) {
-      tmp = totalDailyCost / getSetL;
+    } else if (limitFromSettings != null) {
+      tmp = totalDailyCost / limitFromSettings;
     }
     return tmp;
   };
 
   const newDay = () => {
+    var date = new Date().toLocaleDateString();
+    let histItem = {
+      date: date,
+      total: totalDailyCost,
+    };
+    historyList.push(histItem);
+    setHistoryList(historyList);
+    setData("history", historyList);
+
     //store previous day's data, at least totalcost
     setData("daily_list", []);
     setData("cur_total_daily_cost", 0);
@@ -207,12 +204,12 @@ export default function HomeScreen({ route, navigation }) {
           icon="chart-box-plus-outline"
           onPress={showNewDayModal}
         ></Appbar.Action>
-        {/**
+
+        {/**debug button */}
         <Appbar.Action
           icon="rotate-right"
-          onPress={() => setLimit(getSetL)}
+          onPress={() => console.log(historyList)}
         ></Appbar.Action>
-         */}
       </Appbar.Header>
 
       <View style={styles.container}>

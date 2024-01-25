@@ -1,5 +1,6 @@
 import { View, StyleSheet, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import {
   Appbar,
   Button,
@@ -7,6 +8,8 @@ import {
   PaperProvider,
   Text,
   TextInput,
+  Portal,
+  Modal,
 } from "react-native-paper";
 
 import { useRoute } from "@react-navigation/native";
@@ -14,7 +17,12 @@ import { useRoute } from "@react-navigation/native";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
 
 export default function SettingsScreen({ navigation }) {
+  const [visible, setVisible] = useState(false);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+
   const [limit, setLimit] = useState(100);
+  const [historyList, setHistoryList] = useState([]);
 
   const handleSetLimit = (text) => {
     setData("limit", Number(text));
@@ -23,6 +31,17 @@ export default function SettingsScreen({ navigation }) {
 
   const resetAllData = () => {
     clearAllData();
+  };
+
+  const showHistory = async () => {
+    const getHistoryList = await getData("history");
+    if (getHistoryList != null) {
+      setHistoryList(getHistoryList);
+    } else {
+      setHistoryList([]);
+    }
+    showModal();
+    console.log(historyList);
   };
 
   useEffect(() => {
@@ -86,7 +105,7 @@ export default function SettingsScreen({ navigation }) {
               icon="rotate-left"
               mode="elevated"
               style={styles.button}
-              onPress={() => console.log("Showing History")}
+              onPress={() => showHistory()}
             >
               Show History
             </Button>
@@ -102,6 +121,27 @@ export default function SettingsScreen({ navigation }) {
             </Button>
           </View>
         </ScrollView>
+        <Portal>
+          <Modal
+            visible={visible}
+            onDismiss={hideModal}
+            contentContainerStyle={styles.modal}
+          >
+            <ScrollView>
+              {historyList.map((item, id) => {
+                return (
+                  <View style={styles.modalItem} key={id}>
+                    <Text>{item.date}</Text>
+                    <Text>
+                      {item.total}
+                      <Icon name="currency-bdt" size={16}></Icon>
+                    </Text>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </Modal>
+        </Portal>
       </View>
     </PaperProvider>
   );
@@ -113,6 +153,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     paddingTop: 7,
+  },
+  modal: {
+    alignSelf: "center",
+    backgroundColor: "white",
+    height: "auto",
+    width: "90%",
+    borderRadius: 20,
+    padding: 20,
+  },
+  modalItem: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   inputItem: {
     margin: 5,
