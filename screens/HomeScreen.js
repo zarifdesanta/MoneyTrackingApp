@@ -205,11 +205,12 @@ export default function HomeScreen({ route, navigation }) {
           onPress={showNewDayModal}
         ></Appbar.Action>
 
-        {/**debug button */}
+        {/**debug button 
         <Appbar.Action
           icon="rotate-right"
           onPress={() => console.log(historyList)}
         ></Appbar.Action>
+        */}
       </Appbar.Header>
 
       <View style={styles.container}>
@@ -297,12 +298,14 @@ export default function HomeScreen({ route, navigation }) {
             <TextInput
               label="Title"
               mode="outlined"
+              outlineStyle={{ borderRadius: 20 }}
               onChangeText={(title) => setTitle(title)}
               multiline={true}
             ></TextInput>
             <TextInput
               label="Price"
               mode="outlined"
+              outlineStyle={{ borderRadius: 20 }}
               keyboardType="numeric"
               onChangeText={(price) => setPrice(price)}
               right={<TextInput.Icon icon="currency-bdt" />}
@@ -345,7 +348,6 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     alignSelf: "center",
-
     width: "40%",
     margin: 7,
   },

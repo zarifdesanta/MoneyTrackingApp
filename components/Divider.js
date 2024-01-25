@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     margin: 0,
     marginTop: 7,
-    opacity: 0.3,
+    opacity: 0.2,
     elevation: 5,
   },
 });

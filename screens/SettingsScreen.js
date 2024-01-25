@@ -14,12 +14,18 @@ import {
 
 import { useRoute } from "@react-navigation/native";
 
+import MyModal from "../components/MyModal";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
 
 export default function SettingsScreen({ navigation }) {
+  //history modal
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
+  //deleteAll modal
+  const [deleteAllVisible, setDeleteAllVisible] = useState(false);
+  const showDeleteAllModal = () => setDeleteAllVisible(true);
+  const hideDeleteAllModal = () => setDeleteAllVisible(false);
 
   const [limit, setLimit] = useState(100);
   const [historyList, setHistoryList] = useState([]);
@@ -31,6 +37,7 @@ export default function SettingsScreen({ navigation }) {
 
   const resetAllData = () => {
     clearAllData();
+    hideDeleteAllModal();
   };
 
   const showHistory = async () => {
@@ -85,6 +92,7 @@ export default function SettingsScreen({ navigation }) {
               onChangeText={(text) => handleSetLimit(text)}
             ></TextInput>
             <Button
+              icon="car-speed-limiter"
               mode="elevated"
               style={styles.button}
               onPress={() => navigation.jumpTo("Home", { lim: limit })}
@@ -102,7 +110,7 @@ export default function SettingsScreen({ navigation }) {
               Reset Day
             </Button>
             <Button
-              icon="rotate-left"
+              icon="history"
               mode="elevated"
               style={styles.button}
               onPress={() => showHistory()}
@@ -112,15 +120,26 @@ export default function SettingsScreen({ navigation }) {
           </View>
           <View style={styles.row}>
             <Button
-              icon="rotate-left"
+              icon="delete"
               mode="elevated"
               style={[styles.button, { width: "90%" }]}
-              onPress={() => resetAllData()}
+              onPress={showDeleteAllModal}
             >
               Delete All Data (Dev)
             </Button>
           </View>
         </ScrollView>
+
+        {/**Warning Modal */}
+        <MyModal
+          visible={deleteAllVisible}
+          onDismiss={hideDeleteAllModal}
+          text="Do you really want to delete all your data?"
+          buttonText="Yes"
+          buttonIcon="delete"
+          onPress={resetAllData}
+        ></MyModal>
+
         <Portal>
           <Modal
             visible={visible}
