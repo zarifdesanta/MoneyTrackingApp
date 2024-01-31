@@ -16,6 +16,7 @@ import { useRoute } from "@react-navigation/native";
 
 import MyModal from "../components/MyModal";
 import { setData, getData, clearAllData } from "../helper/SaveLoad";
+import Divider from "../components/Divider";
 
 export default function SettingsScreen({ navigation }) {
   //history modal
@@ -30,6 +31,8 @@ export default function SettingsScreen({ navigation }) {
   const [limit, setLimit] = useState(100);
   const [historyList, setHistoryList] = useState([]);
 
+  const [totalHistory, setTotalHistory] = useState();
+
   const handleSetLimit = (text) => {
     setData("limit", Number(text));
     setLimit(Number(text));
@@ -40,15 +43,24 @@ export default function SettingsScreen({ navigation }) {
     hideDeleteAllModal();
   };
 
+  const handleTotalHistory = (getHistoryList) => {
+    let sum = 0;
+    for (let i = 0; i < getHistoryList.length; i++) {
+      sum += getHistoryList[i].total;
+    }
+    setTotalHistory(sum);
+  };
+
   const showHistory = async () => {
     const getHistoryList = await getData("history");
     if (getHistoryList != null) {
       setHistoryList(getHistoryList);
+      handleTotalHistory(getHistoryList);
     } else {
       setHistoryList([]);
     }
     showModal();
-    console.log(historyList);
+    //console.log(getHistoryList);
   };
 
   useEffect(() => {
@@ -158,6 +170,14 @@ export default function SettingsScreen({ navigation }) {
                   </View>
                 );
               })}
+              <Divider></Divider>
+              <View style={styles.modalItem}>
+                <Text>Total</Text>
+                <Text>
+                  {totalHistory}
+                  <Icon name="currency-bdt" size={16}></Icon>
+                </Text>
+              </View>
             </ScrollView>
           </Modal>
         </Portal>
